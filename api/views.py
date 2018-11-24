@@ -6,7 +6,6 @@ from rest_framework.response import Response
 from .models import *
 from .serializers import *
 import datetime
-import random
 
 @api_view(['POST'])
 def initialize_game(request):
@@ -19,15 +18,13 @@ def initialize_game(request):
     point = data.get('point', '')
 
     locations_within_radius = Location.objects.filter(
-        point__distance_lt=(Point(point[1], point[0]), Distance(km=data.get('radius', ''))))
+        point__distance_lt=(Point(point[0], point[1]), Distance(km=data.get('radius', '')))).order_by('?')[:number_of_locations]
     if len(locations_within_radius) < number_of_locations:
         return Response({'error': 'Not enough locations in the area around the chosen point'}, status=status.HTTP_400_BAD_REQUEST)
 
-    locations = random.sample(locations_within_radius, number_of_locations)
-
     questions = []
 
-    for location in locations:
+    for location in locations_within_radius:
         question = LocationQuestion.objects.filter(location=location).order_by('?').first()
         if question is None:
             return Response({'error': 'No question for ' + location.name}, status=status.HTTP_400_BAD_REQUEST)
@@ -38,11 +35,23 @@ def initialize_game(request):
 
     game = Game.objects.create(
         create_date=datetime.datetime.now(),
-        owner=user,
-        users=[user],
-        locations=locations,
-        questions=questions
+        owner=user
     )
+    game.users.add(user)
+
+    i = 1
+
+    for location in locations_within_radius:
+        game_location = GameLocation.objects.create(
+            location=location,
+            order=i
+        )
+
+        i += 1
+        game.locations.add(game_location)
+
+    game.questions.add(questions)
+    game.save()
 
     serializer = GameSerializer(game)
 
