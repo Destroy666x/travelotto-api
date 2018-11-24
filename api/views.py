@@ -50,7 +50,12 @@ def initialize_game(request):
         i += 1
         game.locations.add(game_location)
 
-    game.questions.add(questions)
+    for question in questions:
+        game_question = GameQuestion.objects.create(
+            question=question
+        )
+        game.questions.add(game_question)
+
     game.save()
 
     serializer = GameSerializer(game)
