@@ -17,10 +17,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 from . import views
+from rest_framework import routers
+from api.api import *
+
+router = routers.DefaultRouter()
+router.register(r'games', GameViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'user-profiles', UserProfileViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('api.urls')),
+    url('^api/', include(router.urls)),
     url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
     url(r'^rest-auth/twitter/$', views.TwitterLogin.as_view(), name='twitter_login'),
