@@ -1,0 +1,7 @@
+from enum import Enum
+
+
+class GameQuestionStatus(Enum):
+    TO_ANSWER = "TO_ANSWER"
+    ANSWERED_CORRECTLY = "ANSWERED_CORRECTLY"
+    ANSWERED_INCORRECTLY = "ANSWERED_INCORRECTLY"
