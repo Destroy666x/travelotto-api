@@ -76,5 +76,5 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     active_game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name="active_game")
     games = models.ManyToManyField(Game, related_name="games")
-    invitations = models.ForeignKey(GameInvitation, on_delete=models.CASCADE)
+    invitations = models.ForeignKey(GameInvitation, on_delete=models.CASCADE, null=True, blank=True)
 
