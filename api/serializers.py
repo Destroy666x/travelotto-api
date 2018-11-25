@@ -44,7 +44,8 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        exclude = ()
+        exclude = ('questions',)
+
 
 class LotterySerializer(serializers.ModelSerializer):
     games = GameSerializer(many=True)
