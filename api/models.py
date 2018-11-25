@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.gis.db.models import PointField
 from django.contrib.gis.geos import Point
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 from .enums import GameQuestionStatus
 
 
@@ -47,7 +47,8 @@ class GameLocation(models.Model):
 class Coupon(models.Model):
     code = models.CharField(max_length=40)
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    tier = models.SmallIntegerField
+    tier = models.SmallIntegerField(validators=[MaxValueValidator(4), MinValueValidator(1)], default=2)
+    value = models.IntegerField(default=30)
 
 
 class Game(models.Model):
