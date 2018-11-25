@@ -33,6 +33,11 @@ def initialize_game(request):
 
         questions.append(question)
 
+    try:
+        last_lottery = Lottery.objects.latest('create_date')
+    except Lottery.DoesNotExist:
+        return Response({'error': 'No lottery added'}, status=status.HTTP_400_BAD_REQUEST)
+
     user = User.objects.get(pk=data.get('user_id', ''))
 
     game = Game.objects.create(
@@ -59,6 +64,8 @@ def initialize_game(request):
         game.questions.add(game_question)
 
     game.save()
+
+    last_lottery.games.add(game)
 
     serializer = GameSerializer(game)
 

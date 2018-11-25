@@ -70,13 +70,13 @@ class GameInvitation(models.Model):
 
 
 class Lottery(models.Model):
-    games = models.ManyToManyField(Game, related_name="lottery_games")
+    games = models.ManyToManyField(Game, related_name="lottery_games", blank=True)
     create_date = models.DateTimeField('date published')
     end_date = models.DateTimeField('end date')
     prize = models.BigIntegerField()
 
     def __str__(self):
-        return self.prize
+        return self.end_date.isoformat(' ', 'seconds')
 
 
 class UserProfile(models.Model):
