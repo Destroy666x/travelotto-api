@@ -189,7 +189,7 @@ def end_game(request, game_id):
     elif correct_answers_percentage >= 0.6:
         tier += 0.5
 
-    tier = round(4, tier)
+    tier = round(tier)
 
     if tier == 0:
         return Response({'message': 'No coupon won'}, status=status.HTTP_200_OK)
