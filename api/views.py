@@ -76,6 +76,9 @@ def initialize_game(request):
 def visit_location(request, game_id, location_id):
     game = Game.objects.get(pk=game_id)
 
+    if game is None:
+        return Response({'error': 'Invalid game'}, status=status.HTTP_400_BAD_REQUEST)
+
     expected_location = game.locations.filter(status='TO_VISIT').order_by('order').first()
     current_location = game.locations.get(pk=location_id)
 
@@ -120,6 +123,10 @@ def visit_location(request, game_id, location_id):
 @api_view(['POST'])
 def answer_question(request, game_id, question_id):
     game = Game.objects.get(pk=game_id)
+
+    if game is None:
+        return Response({'error': 'Invalid game'}, status=status.HTTP_400_BAD_REQUEST)
+
     question = game.questions.get(pk=question_id)
 
     if question is None:
@@ -142,6 +149,56 @@ def answer_question(request, game_id, question_id):
     question.save()
 
     return Response({'status': question.status})
+
+@api_view(['POST'])
+def end_game(request, game_id):
+    game = Game.objects.get(pk=game_id)
+
+    if game is None:
+        return Response({'error': 'Invalid game'}, status=status.HTTP_400_BAD_REQUEST)
+
+    tier = locations_count = correct_locations_count = correct_answers_count = 0
+
+    for location in game.locations:
+        locations_count += 1
+
+        if location.status == 'VISITED_CORRECTLY':
+            correct_locations_count += 1
+
+    for question in game.questions:
+        if question.status == 'ANSWERED_CORRECTLY':
+            correct_answers_count += 1
+
+    if len(game.users) > 3:
+        tier += 0.25
+
+    correct_locations_percentage = correct_locations_count / locations_count
+    correct_answers_percentage = correct_answers_count / locations_count
+
+    if correct_locations_percentage == 1:
+        tier += 1
+    elif correct_locations_percentage >= 0.75:
+        tier += 0.75
+    elif correct_locations_percentage >= 0.6:
+        tier += 0.5
+
+    if correct_answers_percentage == 1:
+        tier += 1
+    elif correct_answers_percentage >= 0.75:
+        tier += 0.75
+    elif correct_answers_percentage >= 0.6:
+        tier += 0.5
+
+    tier = round(4, tier)
+
+    coupon = Coupon.objects.filter(tier=tier).order_by('?').first()
+
+    serializer = CouponSerializer(coupon)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 
 
 @api_view(['GET'])
