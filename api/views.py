@@ -191,7 +191,11 @@ def end_game(request, game_id):
 
     tier = round(4, tier)
 
+    if tier == 0:
+        return Response({'message': 'No coupon won'}, status=status.HTTP_200_OK)
+
     coupon = Coupon.objects.filter(tier=tier).order_by('?').first()
+    game.update(wonCoupon=coupon)
 
     serializer = CouponSerializer(coupon)
 
