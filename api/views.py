@@ -102,6 +102,38 @@ def visit_location(request, game_id, location_id):
 
 
 @api_view(['POST'])
-def answer_question(request, game_id, question_id):
-    return Response('answer_question, game %d, question %d' % (game_id, question_id))
+def answer_question(request, game_id, location_id):
+    game = Game.objects.get(pk=game_id)
+
+    expected_location = game.locations.filter(visited=True).order_by('order').last()
+    current_location = game.locations.get(pk=location_id)
+
+    if expected_location is None:
+        return Response({'error': 'Invalid location'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if expected_location != current_location:
+        return Response({'error': 'Incorrect location order'}, status=status.HTTP_400_BAD_REQUEST)
+
+    question = game.questions.get(question__location=current_location.location)
+
+    if question is None:
+        return Response({'error': 'No question for ' + current_location.location.name}, status=status.HTTP_400_BAD_REQUEST)
+
+    if question.status != 'TO_ANSWER':
+        return Response({'error': 'Question has already been answered'}, status=status.HTTP_400_BAD_REQUEST)
+
+    answers = [question.question.correct_answer, question.question.incorrect_answer]
+    answer = request.data.get('answer')
+
+    if answer not in answers:
+        return Response({'error': 'This is not a valid answer. Valid options are: ' + ', '.join(answers)}, status=status.HTTP_400_BAD_REQUEST)
+
+    if answer == question.question.correct_answer:
+        question.status = 'ANSWERED_CORRECTLY'
+    else:
+        question.status = 'ANSWERED_INCORRECTLY'
+
+    question.save()
+
+    return Response({'status': question.status});
 
