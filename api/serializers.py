@@ -7,6 +7,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         exclude = ()
+        depth = 2
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -21,6 +22,13 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
         fields = ('id', 'name', 'description', 'point')
+
+class CouponSerializer(serializers.ModelSerializer):
+    location = LocationSerializer()
+
+    class Meta:
+        model = Coupon
+        exclude = ()
 
 
 class GameLocationSerializer(serializers.ModelSerializer):
@@ -41,6 +49,7 @@ class GameSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True)
     owner = UserSerializer()
     locations = GameLocationSerializer(many=True)
+    wonCoupon = CouponSerializer()
 
     class Meta:
         model = Game
