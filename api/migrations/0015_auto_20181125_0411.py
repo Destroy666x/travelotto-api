@@ -19,6 +19,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='location',
             name='photo',
-            field=models.CharField(blank=True, max_length=1000, null=True),
+            field=models.ImageField(blank=True, null=True, upload_to=''),
         ),
     ]
