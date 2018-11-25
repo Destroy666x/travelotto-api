@@ -23,6 +23,11 @@ class GameLocationViewSet(viewsets.ModelViewSet):
     serializer_class = GameLocationSerializer
 
 
+class GameInvitationViewSet(viewsets.ModelViewSet):
+    queryset = GameInvitation.objects.all()
+    serializer_class = GameInvitationSerializer
+
+
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
