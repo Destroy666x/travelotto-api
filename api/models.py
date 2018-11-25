@@ -28,7 +28,7 @@ class LocationQuestion(models.Model):
 class GameQuestion(models.Model):
     question = models.ForeignKey(LocationQuestion, on_delete=models.CASCADE)
     status = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=GameQuestionStatus.choices(),
         default=GameQuestionStatus.TO_ANSWER
     )
