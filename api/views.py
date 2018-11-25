@@ -159,17 +159,17 @@ def end_game(request, game_id):
 
     tier = locations_count = correct_locations_count = correct_answers_count = 0
 
-    for location in game.locations:
+    for location in game.locations.all():
         locations_count += 1
 
         if location.status == 'VISITED_CORRECTLY':
             correct_locations_count += 1
 
-    for question in game.questions:
+    for question in game.questions.all():
         if question.status == 'ANSWERED_CORRECTLY':
             correct_answers_count += 1
 
-    if len(game.users) > 3:
+    if len(game.users.all()) > 3:
         tier += 0.25
 
     correct_locations_percentage = correct_locations_count / locations_count
