@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0015_location_photo'),
+        ('api', '0015_auto_20181125_0411'),
     ]
 
     operations = [
