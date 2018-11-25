@@ -198,9 +198,6 @@ def end_game(request, game_id):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
 @api_view(['GET'])
 def get_game_lottery(request, game_id):
     lottery = Lottery.objects.filter(games__id=game_id)[0]
