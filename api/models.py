@@ -31,7 +31,7 @@ class GameQuestion(models.Model):
     status = models.CharField(
         max_length=30,
         choices=GameQuestionStatus.choices(),
-        default=GameQuestionStatus('TO_ANSWER')
+        default='TO_ANSWER'
     )
 
 
@@ -40,7 +40,7 @@ class GameLocation(models.Model):
     status = models.CharField(
         max_length=50,
         choices=GameLocationStatus.choices(),
-        default=GameLocationStatus('TO_VISIT')
+        default='TO_VISIT'
     )
     order = models.SmallIntegerField()
 
