@@ -21,7 +21,8 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'description', 'point')
+        fields = ('id', 'name', 'description', 'photo', 'point')
+
 
 class CouponSerializer(serializers.ModelSerializer):
     location = LocationSerializer()
@@ -40,6 +41,7 @@ class GameLocationSerializer(serializers.ModelSerializer):
 
 
 class GameQuestionSerializer(serializers.Serializer):
+    question_id = serializers.IntegerField()
     question_text = serializers.CharField(max_length=200)
     answer_1 = serializers.CharField(max_length=200)
     answer_2 = serializers.CharField(max_length=200)
@@ -54,6 +56,7 @@ class GameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         exclude = ('questions',)
+
 
 class GameInvitationSerializer(serializers.ModelSerializer):
     game = GameSerializer()

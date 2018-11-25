@@ -76,14 +76,25 @@ def initialize_game(request):
 def visit_location(request, game_id, location_id):
     game = Game.objects.get(pk=game_id)
 
-    expected_location = game.locations.filter(visited=False).order_by('order').first()
+    expected_location = game.locations.filter(status='TO_VISIT').order_by('order').first()
     current_location = game.locations.get(pk=location_id)
+
+    if current_location.status is None:
+        return Response({'error': 'Could not find location'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if current_location.status == 'VISITED_INCORRECTLY':
+        return Response({'error': 'This location has already been visited incorrectly'}, status=status.HTTP_400_BAD_REQUEST)
 
     if expected_location is None:
         return Response({'error': 'No more locations to visit'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if expected_location != current_location:
-        return Response({'error': 'Incorrect location order'}, status=status.HTTP_400_BAD_REQUEST)
+    if current_location.status == 'TO_VISIT':
+        if expected_location == current_location:
+            current_location.status = 'VISITED_CORRECTLY'
+        else:
+            current_location.status = 'VISITED_INCORRECTLY'
+
+        current_location.save()
 
     question = game.questions.get(question__location=current_location.location)
 
@@ -93,14 +104,12 @@ def visit_location(request, game_id, location_id):
     if question.status != 'TO_ANSWER':
         return Response({'error': 'Question has already been answered'}, status=status.HTTP_400_BAD_REQUEST)
 
-    current_location.visited = True
-    current_location.save()
-
     answers = [question.question.correct_answer, question.question.incorrect_answer]
 
     random.shuffle(answers)
 
     representation = GameQuestionRepresentation()
+    representation.question_id = question.id
     representation.question_text = question.question.question_text
     representation.answer_1 = answers[0]
     representation.answer_2 = answers[1]
@@ -109,22 +118,12 @@ def visit_location(request, game_id, location_id):
 
 
 @api_view(['POST'])
-def answer_question(request, game_id, location_id):
+def answer_question(request, game_id, question_id):
     game = Game.objects.get(pk=game_id)
-
-    expected_location = game.locations.filter(visited=True).order_by('order').last()
-    current_location = game.locations.get(pk=location_id)
-
-    if expected_location is None:
-        return Response({'error': 'Invalid location'}, status=status.HTTP_400_BAD_REQUEST)
-
-    if expected_location != current_location:
-        return Response({'error': 'Incorrect location order'}, status=status.HTTP_400_BAD_REQUEST)
-
-    question = game.questions.get(question__location=current_location.location)
+    question = game.questions.get(pk=question_id)
 
     if question is None:
-        return Response({'error': 'No question for ' + current_location.location.name}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No question found'}, status=status.HTTP_400_BAD_REQUEST)
 
     if question.status != 'TO_ANSWER':
         return Response({'error': 'Question has already been answered'}, status=status.HTTP_400_BAD_REQUEST)

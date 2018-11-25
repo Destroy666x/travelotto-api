@@ -3,13 +3,14 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db.models import PointField
 from django.contrib.gis.geos import Point
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .enums import GameQuestionStatus
+from .enums import GameQuestionStatus, GameLocationStatus
 
 
 class Location(models.Model):
     point = PointField(default=Point(x=18.66, y=50.29))
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
+    photo = models.CharField(max_length=1000, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -30,18 +31,21 @@ class GameQuestion(models.Model):
     status = models.CharField(
         max_length=30,
         choices=GameQuestionStatus.choices(),
-        default=GameQuestionStatus.TO_ANSWER
+        default=GameQuestionStatus('TO_ANSWER')
     )
 
 
 class GameLocation(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
-    visited = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=50,
+        choices=GameLocationStatus.choices(),
+        default=GameLocationStatus('TO_VISIT')
+    )
     order = models.SmallIntegerField()
-    # question = models.ForeignKey(LocationQuestion, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.location.name + ' ' + self.location.description
+        return self.location.name
 
 
 class Coupon(models.Model):
@@ -89,6 +93,7 @@ class UserProfile(models.Model):
 
 
 class GameQuestionRepresentation:
+    question_id = None
     question_text = ''
     answer_1 = ''
     answer_2 = ''
