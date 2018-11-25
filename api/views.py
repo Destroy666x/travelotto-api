@@ -143,6 +143,7 @@ def answer_question(request, game_id, question_id):
 
     return Response({'status': question.status})
 
+
 @api_view(['GET'])
 def get_game_lottery(request, game_id):
     lottery = Lottery.objects.filter(games__id=game_id)[0]
@@ -153,5 +154,3 @@ def get_game_lottery(request, game_id):
     serializer = LotterySerializer(lottery)
 
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
