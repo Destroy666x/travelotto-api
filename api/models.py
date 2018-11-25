@@ -78,3 +78,8 @@ class UserProfile(models.Model):
     games = models.ManyToManyField(Game, related_name="games")
     invitations = models.ForeignKey(GameInvitation, on_delete=models.CASCADE, null=True, blank=True)
 
+
+class GameQuestionRepresentation:
+    question_text = ''
+    answer_1 = ''
+    answer_2 = ''

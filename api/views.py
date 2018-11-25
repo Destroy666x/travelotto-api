@@ -50,3 +50,45 @@ def initialize_game(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def visit_location(request, game_id, location_id):
+    game = Game.objects.get(pk=game_id)
+
+    expected_location = game.locations.filter(visited=False).order_by('order').first()
+    current_location = game.locations.get(pk=location_id)
+
+    if expected_location is None:
+        return Response({'error': 'No more locations to visit'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if expected_location != current_location:
+        return Response({'error': 'Incorrect location order'}, status=status.HTTP_400_BAD_REQUEST)
+
+    question = game.questions.get(question__location=current_location.location)
+
+    if question is None:
+        return Response({'error': 'No question for ' + current_location.location.name}, status=status.HTTP_400_BAD_REQUEST)
+
+    if question.status != 'TO_ANSWER':
+        return Response({'error': 'Question has already been answered'}, status=status.HTTP_400_BAD_REQUEST)
+
+    current_location.visited = True
+    current_location.save()
+
+    answers = [question.question.correct_answer, question.question.incorrect_answer]
+
+    random.shuffle(answers)
+
+    representation = GameQuestionRepresentation()
+    representation.question_text = question.question.question_text
+    representation.answer_1 = answers[0]
+    representation.answer_2 = answers[1]
+
+    return Response(GameQuestionSerializer(representation).data)
+
+
+@api_view(['POST'])
+def answer_question(request, game_id, question_id):
+    return Response('answer_question, game %d, question %d' % (game_id, question_id))
+

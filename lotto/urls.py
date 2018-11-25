@@ -26,8 +26,6 @@ router.register(r'users', UserViewSet)
 router.register(r'user-profiles', UserProfileViewSet)
 router.register(r'game-locations', GameLocationViewSet)
 router.register(r'locations', LocationViewSet)
-router.register(r'location-questions', LocationQuestionViewSet)
-router.register(r'game-questions', GameQuestionViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
