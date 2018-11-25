@@ -21,7 +21,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ('id', 'name', 'description', 'point')
+        fields = ('id', 'name', 'description', 'point', 'photo')
 
 class CouponSerializer(serializers.ModelSerializer):
     location = LocationSerializer()

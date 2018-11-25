@@ -10,6 +10,7 @@ class Location(models.Model):
     point = PointField(default=Point(x=18.66, y=50.29))
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to='static', blank=True, null=True)
 
     def __str__(self):
         return self.name
