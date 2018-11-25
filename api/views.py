@@ -199,7 +199,8 @@ def end_game(request, game_id):
     if coupon is None:
         return Response({'error': 'No coupon for this tier found'}, status=status.HTTP_400_BAD_REQUEST)
 
-    game.update(wonCoupon=coupon)
+    game.wonCoupon = coupon
+    game.save()
 
     serializer = CouponSerializer(coupon)
 
