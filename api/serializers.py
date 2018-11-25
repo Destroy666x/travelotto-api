@@ -37,7 +37,7 @@ class GameLocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GameLocation
-        fields = ('id', 'visited', 'location', 'order')
+        fields = ('id', 'status', 'location', 'order')
 
 
 class GameQuestionSerializer(serializers.Serializer):
