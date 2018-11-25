@@ -46,6 +46,15 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         exclude = ('questions',)
 
+class GameInvitationSerializer(serializers.ModelSerializer):
+    game = GameSerializer()
+    recipient = UserSerializer()
+    sender = UserSerializer()
+
+    class Meta:
+        model = GameInvitation
+        exclude = ()
+
 
 class LotterySerializer(serializers.ModelSerializer):
     games = GameSerializer(many=True)
