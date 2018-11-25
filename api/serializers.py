@@ -59,5 +59,13 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         exclude = ()
 
+class LotterySerializer(serializers.ModelSerializer):
+    games = GameSerializer(many=True)
+
+    class Meta:
+        model = Lottery
+        exclude = ()
+
 
 UserProfileSerializer.active_game = GameSerializer
+UserProfileSerializer.won_lotteries = LotterySerializer(many=True)

@@ -35,3 +35,7 @@ class LocationQuestionViewSet(viewsets.ModelViewSet):
 class GameQuestionViewSet(viewsets.ModelViewSet):
     queryset = GameQuestion.objects.all()
     serializer_class = GameQuestionSerializer
+
+class LotteryViewSet(viewsets.ModelViewSet):
+    queryset = Lottery.objects.all()
+    serializer_class = LotterySerializer

@@ -33,9 +33,6 @@ class GameQuestion(models.Model):
         default=GameQuestionStatus.TO_ANSWER
     )
 
-    def __str__(self):
-        return self.question.__str__()
-
 
 class GameLocation(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
@@ -71,10 +68,19 @@ class GameInvitation(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     accepted = models.BooleanField(default=False)
 
+class Lottery(models.Model):
+    games = models.ManyToManyField(Game, related_name="lottery_games")
+    create_date = models.DateTimeField('date published')
+    end_date = models.DateTimeField('end date')
+    prize = models.BigIntegerField()
+
+    def __str__(self):
+        return self.prize
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     active_game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name="active_game")
     games = models.ManyToManyField(Game, related_name="games")
+    won_lotteries = models.ForeignKey(Lottery, on_delete=models.CASCADE, null=True, blank=True)
     invitations = models.ForeignKey(GameInvitation, on_delete=models.CASCADE, null=True, blank=True)
-
